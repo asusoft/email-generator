@@ -23,7 +23,15 @@ int main(int argc, char* argv[])
 
     if (argc < 3)
     {
-        string.append("Insuficient parameters!!! ");
+        string.append("Insufficient arguments. Please provide all the files.");
+
+        writeOutput(errorFilePath, string);
+        errorFile.close();
+        return 0;
+    }
+    if (argc > 3)
+    {
+        string.append("Too many files provided");
 
         writeOutput(errorFilePath, string);
         errorFile.close();
@@ -55,7 +63,15 @@ int main(int argc, char* argv[])
             QStringList singleData;
             singleData.append(data[i]);
 
-            generated = generateEmail(temp, singleData);
+            try {
+                generated = generateEmail(temp, singleData);
+            } catch (int err) {
+                string.append("A value for key was found in the data list that is not included in the template.");
+
+                writeOutput(errorFilePath, string);
+                errorFile.close();
+                return 0;
+            }
 
             writeOutput(outputFilePath, generated);
             out.clear();
@@ -66,7 +82,7 @@ int main(int argc, char* argv[])
         switch (err)
         {
         case 1:
-            string.append("One or both of the files does not exist!!!");
+            string.append("One or both of the files cannot be found.");
             writeOutput(errorFilePath, string);
 
             return 0;

@@ -58,20 +58,11 @@ QStringList getFileData(QString filePath) throw(int)
     return string;
 }
 
-QStringList generateEmail(QStringList temp, QStringList data)
+QStringList generateEmail(QStringList temp, QStringList data) throw (int)
 {
     QStringList generated = temp;
+    bool isFound = false;
     QStringList dataList = data[0].split(" ");
-
-    QString out = "generated.txt";
-
-
-           QByteArray ba = out.toLocal8Bit();
-            char *outp = ba.data();
-
-            QString outputFilePath = getFileLocation(outp);
-          QFile outputFile(outputFilePath);
-            writeOutput(outputFilePath, dataList);
 
       for(int i = 0; i < dataList.size(); i++)
        {
@@ -79,10 +70,18 @@ QStringList generateEmail(QStringList temp, QStringList data)
          for(int j=0; j < generated.size(); j++)
          {
            if (generated[j].contains(dataList[i]))
-               generated[j].replace(dataList[i], dataList[i+1]);
-        }
+           {
+               generated[j].replace(dataList[i], dataList[i+1].replace(R"(_)", R"( )"));
+               isFound = true;
+           }
+         }
 
          i += 1;
+         if(isFound == false)
+         {
+             throw 1;
+         }
+         isFound = false;
        }
 
     return generated;
